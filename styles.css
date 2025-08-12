@@ -2,26 +2,18 @@
 
 /* Main Folders Section */
 .folders-section {
-  margin: 8px 4px 16px;
-  padding: 8px;
-  border: 1px solid var(--border-light, rgba(142, 142, 160, 0.15));
-  border-radius: 12px;
-  background: var(--surface-tertiary, rgba(142, 142, 160, 0.02));
+  margin: 8px 0px 16px;
+  padding: 4px 0px;
+  border-radius: 6px;
   transition: all 0.2s ease;
-}
-
-.folders-section:hover {
-  border-color: var(--border-medium, rgba(142, 142, 160, 0.25));
-  background: var(--surface-secondary, rgba(142, 142, 160, 0.04));
 }
 
 /* Folder Controls */
 .folder-controls {
   display: flex;
   justify-content: flex-end;
-  padding: 8px 12px 4px;
-  margin-bottom: 8px;
-  border-bottom: 1px solid var(--border-light, rgba(142, 142, 160, 0.15));
+  padding: 4px 8px 8px;
+  margin-bottom: 4px;
 }
 
 .create-folder-btn {
@@ -44,17 +36,10 @@
 
 /* Folder Container */
 .folder-container {
-  margin-bottom: 8px;
-  padding: 4px 8px;
-  border-radius: 8px;
-  border: 1px solid var(--border-light, rgba(142, 142, 160, 0.1));
-  background: var(--surface-tertiary, rgba(142, 142, 160, 0.03));
+  margin-bottom: 4px;
+  padding: 2px 4px;
+  border-radius: 6px;
   transition: all 0.2s ease;
-}
-
-.folder-container:hover {
-  border-color: var(--border-medium, rgba(142, 142, 160, 0.2));
-  background: var(--surface-secondary, rgba(142, 142, 160, 0.05));
 }
 
 /* Folder Header */
@@ -156,37 +141,47 @@
   border-radius: 0 8px 8px 0;
 }
 
-/* Chat items inside folders */
-.folder-content a[href^="/c/"] {
-  margin-bottom: 4px;
-  border-radius: 8px;
-  padding: 8px 12px;
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: var(--text-primary, #ffffff);
-  transition: background-color 0.2s ease;
-  position: relative;
+/* Completely hands-off approach for folder content - let ChatGPT handle everything */
+.folder-content {
+  /* Only control the folder container itself, not its contents */
 }
 
-.folder-content a[href^="/c/"]:hover {
-  background-color: var(--surface-secondary, rgba(142, 142, 160, 0.1));
-}
-
-.folder-content a[href^="/c/"][data-active=""] {
-  background-color: var(--surface-secondary, rgba(142, 142, 160, 0.2));
-}
+/* Remove ALL styling overrides for chat items in folders */
 
 /* Uncategorized Section */
 .uncategorized-header {
   padding: 8px 12px;
-  margin-top: 16px;
-  margin-bottom: 8px;
-  border-top: 1px solid var(--border-light, rgba(142, 142, 160, 0.2));
-  border-bottom: 1px solid var(--border-light, rgba(142, 142, 160, 0.1));
-  background: var(--surface-tertiary, rgba(142, 142, 160, 0.02));
-  border-radius: 6px 6px 0 0;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  border-top: 1px solid var(--border-light, rgba(142, 142, 160, 0.15));
   position: relative;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+/* Uncategorized drop zone styling */
+.uncategorized-header.drag-over {
+  background-color: var(--surface-secondary, rgba(16, 163, 127, 0.15)) !important;
+  border: 2px dashed var(--accent, #10a37f) !important;
+  border-radius: 8px !important;
+  transform: scale(1.02);
+}
+
+.uncategorized-header.drag-over::before {
+  content: "Drop here to remove from folder";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--accent, #10a37f);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
 }
 
 .uncategorized-header span {
@@ -231,6 +226,12 @@
   color: var(--text-secondary, #8e8ea0);
 }
 
+.context-menu-separator {
+  height: 1px;
+  background: var(--border-light, rgba(142, 142, 160, 0.2));
+  margin: 4px 0;
+}
+
 /* Drag and Drop States */
 a[href^="/c/"][draggable="true"] {
   cursor: grab;
@@ -238,7 +239,64 @@ a[href^="/c/"][draggable="true"] {
 
 a[href^="/c/"][draggable="true"]:active {
   cursor: grabbing;
-  opacity: 0.7;
+}
+
+/* Drag over states */
+.folder-header.drag-over,
+.folder-content.drag-over {
+  background-color: var(--surface-secondary, rgba(16, 163, 127, 0.15)) !important;
+  border: 2px dashed var(--accent, #10a37f) !important;
+  border-radius: 8px !important;
+  transform: scale(1.02);
+  transition: all 0.2s ease !important;
+}
+
+/* Dragging item visual feedback */
+a[href^="/c/"].dragging {
+  opacity: 0.6;
+  transform: rotate(1deg) scale(0.98);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transition: all 0.2s ease;
+}
+
+/* Smooth transitions for folder movements */
+.folder-container {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced drop zone feedback */
+.folder-header.drag-over::before {
+  content: "Drop here to add to folder";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--accent, #10a37f);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.folder-content.drag-over::before {
+  content: "Drop here";
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent, #10a37f);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
+  z-index: 10;
+  pointer-events: none;
 }
 
 /* Dark mode compatibility */
@@ -301,29 +359,9 @@ a[href^="/c/"][draggable="true"]:active {
 }
 
 /* Ensure proper styling for ChatGPT's specific classes */
-.folder-content .group.__menu-item.hoverable {
-  margin-bottom: 4px;
-  border-radius: 8px;
-}
+/* Preserve ChatGPT's original styling for menu items in folders */
 
-.folder-content .group.__menu-item.hoverable .flex.min-w-0.grow.items-center {
-  padding: 0;
-}
-
-.folder-content .group.__menu-item.hoverable .trailing.highlight {
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.folder-content .group.__menu-item.hoverable:hover .trailing.highlight {
-  opacity: 1;
-}
-
-/* Override any existing chat item margins when in folders */
-.folder-content > * {
-  margin-top: 0 !important;
-  margin-bottom: 4px !important;
-}
+/* Let folder content items use their natural spacing */
 
 /* Smooth folder expand/collapse - styles handled above */
 
