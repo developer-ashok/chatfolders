@@ -80,6 +80,10 @@ class ChatGPTFolders {
     const header = sidebar.querySelector('h2');
     if (!header || document.querySelector('.folder-controls')) return;
 
+    // Create main folders section container
+    const foldersSection = document.createElement('div');
+    foldersSection.className = 'folders-section';
+
     const controlsContainer = document.createElement('div');
     controlsContainer.className = 'folder-controls';
     controlsContainer.innerHTML = `
@@ -90,7 +94,8 @@ class ChatGPTFolders {
       </button>
     `;
 
-    header.parentNode.insertBefore(controlsContainer, header.nextSibling);
+    foldersSection.appendChild(controlsContainer);
+    header.parentNode.insertBefore(foldersSection, header.nextSibling);
 
     // Add event listener for creating folders
     controlsContainer.querySelector('.create-folder-btn').addEventListener('click', () => {
@@ -156,8 +161,8 @@ class ChatGPTFolders {
     const sidebar = document.querySelector('aside[aria-labelledby]');
     if (!sidebar) return;
 
-    const chatContainer = sidebar.querySelector('h2').parentNode;
-    if (!chatContainer) return;
+    const foldersSection = document.querySelector('.folders-section');
+    if (!foldersSection) return;
 
     // Remove existing folder elements and uncategorized headers
     document.querySelectorAll('.folder-container, .uncategorized-header').forEach(el => el.remove());
@@ -167,14 +172,14 @@ class ChatGPTFolders {
       chat.style.display = '';
     });
     
-    // Create folders
+    // Create folders inside the folders section
     Object.entries(this.folders).forEach(([folderId, folder]) => {
       const folderElement = this.createFolderElement(folderId, folder);
-      chatContainer.appendChild(folderElement);
+      foldersSection.appendChild(folderElement);
     });
 
     // Create uncategorized section for chats not in folders
-    this.createUncategorizedSection(chatContainer);
+    this.createUncategorizedSection(foldersSection.parentNode);
   }
 
   createFolderElement(folderId, folder) {

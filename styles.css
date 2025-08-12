@@ -1,11 +1,27 @@
 /* ChatGPT Folders Extension Styles */
 
+/* Main Folders Section */
+.folders-section {
+  margin: 8px 4px 16px;
+  padding: 8px;
+  border: 1px solid var(--border-light, rgba(142, 142, 160, 0.15));
+  border-radius: 12px;
+  background: var(--surface-tertiary, rgba(142, 142, 160, 0.02));
+  transition: all 0.2s ease;
+}
+
+.folders-section:hover {
+  border-color: var(--border-medium, rgba(142, 142, 160, 0.25));
+  background: var(--surface-secondary, rgba(142, 142, 160, 0.04));
+}
+
 /* Folder Controls */
 .folder-controls {
   display: flex;
   justify-content: flex-end;
   padding: 8px 12px 4px;
   margin-bottom: 8px;
+  border-bottom: 1px solid var(--border-light, rgba(142, 142, 160, 0.15));
 }
 
 .create-folder-btn {
@@ -29,6 +45,16 @@
 /* Folder Container */
 .folder-container {
   margin-bottom: 8px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light, rgba(142, 142, 160, 0.1));
+  background: var(--surface-tertiary, rgba(142, 142, 160, 0.03));
+  transition: all 0.2s ease;
+}
+
+.folder-container:hover {
+  border-color: var(--border-medium, rgba(142, 142, 160, 0.2));
+  background: var(--surface-secondary, rgba(142, 142, 160, 0.05));
 }
 
 /* Folder Header */
@@ -157,6 +183,9 @@
   margin-top: 16px;
   margin-bottom: 8px;
   border-top: 1px solid var(--border-light, rgba(142, 142, 160, 0.2));
+  border-bottom: 1px solid var(--border-light, rgba(142, 142, 160, 0.1));
+  background: var(--surface-tertiary, rgba(142, 142, 160, 0.02));
+  border-radius: 6px 6px 0 0;
   position: relative;
 }
 
