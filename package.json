@@ -1,0 +1,28 @@
+{
+  "name": "chatgpt-folders",
+  "version": "1.0.0",
+  "description": "Chrome extension to organize ChatGPT conversations into folders",
+  "main": "content.js",
+  "scripts": {
+    "build": "echo 'No build process needed - this is a manifest v3 extension'",
+    "debug": "echo 'Load debug.js in browser console for debugging'"
+  },
+  "keywords": [
+    "chatgpt",
+    "chrome-extension",
+    "folders",
+    "organization",
+    "productivity"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "your-repo-url"
+  },
+  "engines": {
+    "chrome": ">=88"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}

@@ -1,0 +1,308 @@
+/* ChatGPT Folders Extension Styles */
+
+/* Folder Controls */
+.folder-controls {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px 4px;
+  margin-bottom: 8px;
+}
+
+.create-folder-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #8e8ea0);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.create-folder-btn:hover {
+  background-color: var(--surface-secondary, rgba(142, 142, 160, 0.1));
+  color: var(--text-primary, #ffffff);
+}
+
+/* Folder Container */
+.folder-container {
+  margin-bottom: 8px;
+}
+
+/* Folder Header */
+.folder-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.folder-header:hover {
+  background-color: var(--surface-secondary, rgba(142, 142, 160, 0.1));
+}
+
+.folder-toggle {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #8e8ea0);
+  cursor: pointer;
+  padding: 0;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.folder-toggle.open {
+  transform: rotate(90deg);
+}
+
+.folder-name {
+  flex: 1;
+  color: var(--text-primary, #ffffff);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.folder-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.folder-header:hover .folder-actions {
+  opacity: 1;
+}
+
+.folder-actions button {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #8e8ea0);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.folder-actions button:hover {
+  background-color: var(--surface-tertiary, rgba(142, 142, 160, 0.2));
+  color: var(--text-primary, #ffffff);
+}
+
+.delete-folder:hover {
+  color: var(--danger, #ef4444) !important;
+}
+
+/* Folder Content */
+.folder-content {
+  margin-left: 16px;
+  padding-left: 12px;
+  border-left: 1px solid var(--border-light, rgba(142, 142, 160, 0.2));
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 0;
+  opacity: 0;
+  margin-bottom: 0;
+}
+
+.folder-content.open {
+  max-height: 2000px;
+  opacity: 1;
+  margin-bottom: 8px;
+}
+
+.folder-content.drag-over {
+  background-color: var(--surface-secondary, rgba(142, 142, 160, 0.1));
+  border-left-color: var(--accent, #10a37f);
+  border-radius: 0 8px 8px 0;
+}
+
+/* Chat items inside folders */
+.folder-content a[href^="/c/"] {
+  margin-bottom: 4px;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-primary, #ffffff);
+  transition: background-color 0.2s ease;
+  position: relative;
+}
+
+.folder-content a[href^="/c/"]:hover {
+  background-color: var(--surface-secondary, rgba(142, 142, 160, 0.1));
+}
+
+.folder-content a[href^="/c/"][data-active=""] {
+  background-color: var(--surface-secondary, rgba(142, 142, 160, 0.2));
+}
+
+/* Uncategorized Section */
+.uncategorized-header {
+  padding: 8px 12px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  border-top: 1px solid var(--border-light, rgba(142, 142, 160, 0.2));
+  position: relative;
+}
+
+.uncategorized-header span {
+  color: var(--text-secondary, #8e8ea0);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Context Menu */
+.chat-context-menu {
+  background: var(--surface-primary, #2d2d30);
+  border: 1px solid var(--border-medium, rgba(142, 142, 160, 0.3));
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  overflow: hidden;
+  min-width: 180px;
+}
+
+.context-menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--text-primary, #ffffff);
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid var(--border-light, rgba(142, 142, 160, 0.1));
+}
+
+.context-menu-item:last-child {
+  border-bottom: none;
+}
+
+.context-menu-item:hover:not(.disabled) {
+  background-color: var(--surface-secondary, rgba(142, 142, 160, 0.1));
+}
+
+.context-menu-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: var(--text-secondary, #8e8ea0);
+}
+
+/* Drag and Drop States */
+a[href^="/c/"][draggable="true"] {
+  cursor: grab;
+}
+
+a[href^="/c/"][draggable="true"]:active {
+  cursor: grabbing;
+  opacity: 0.7;
+}
+
+/* Dark mode compatibility */
+@media (prefers-color-scheme: dark) {
+  .folder-controls,
+  .folder-header,
+  .folder-content,
+  .uncategorized-header,
+  .chat-context-menu {
+    /* Variables should already handle dark mode, but fallbacks */
+    color: #ffffff;
+  }
+}
+
+/* Light mode compatibility */
+@media (prefers-color-scheme: light) {
+  :root {
+    --text-primary: #000000;
+    --text-secondary: #6b7280;
+    --surface-primary: #ffffff;
+    --surface-secondary: rgba(0, 0, 0, 0.05);
+    --surface-tertiary: rgba(0, 0, 0, 0.1);
+    --border-light: rgba(0, 0, 0, 0.1);
+    --border-medium: rgba(0, 0, 0, 0.2);
+    --accent: #10a37f;
+    --danger: #ef4444;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .folder-header {
+    padding: 6px 8px;
+  }
+  
+  .folder-content {
+    margin-left: 12px;
+    padding-left: 8px;
+  }
+  
+  .folder-name {
+    font-size: 13px;
+  }
+}
+
+/* Animation for smooth transitions */
+.folder-content a[href^="/c/"] {
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ensure proper styling for ChatGPT's specific classes */
+.folder-content .group.__menu-item.hoverable {
+  margin-bottom: 4px;
+  border-radius: 8px;
+}
+
+.folder-content .group.__menu-item.hoverable .flex.min-w-0.grow.items-center {
+  padding: 0;
+}
+
+.folder-content .group.__menu-item.hoverable .trailing.highlight {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.folder-content .group.__menu-item.hoverable:hover .trailing.highlight {
+  opacity: 1;
+}
+
+/* Override any existing chat item margins when in folders */
+.folder-content > * {
+  margin-top: 0 !important;
+  margin-bottom: 4px !important;
+}
+
+/* Smooth folder expand/collapse - styles handled above */
+
+/* Ensure text selection doesn't interfere with drag */
+.folder-header,
+.folder-content a[href^="/c/"] {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
