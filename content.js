@@ -731,41 +731,308 @@ class ChatGPTFolders {
       dotsButton.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        this.showVirtualChatMenu(e, chatId);
+        this.showNativeMenuWithFolders(chatId, e);
       });
     }
-
-    // Add context menu
-    virtualChat.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.showVirtualChatMenu(e, chatId);
-    });
   }
 
-  showVirtualChatMenu(event, chatId) {
-    // Remove existing context menus
+  showNativeMenuWithFolders(chatId, clickEvent) {
+    console.log(`Attempting to show menu for chatId: ${chatId}`);
+    
+    // Try multiple ways to find the original chat
+    let originalChat = document.querySelector(`a[href="/c/${chatId}"]:not([data-virtual-chat])`);
+    
+    if (!originalChat) {
+      // Try without the leading slash
+      originalChat = document.querySelector(`a[href="c/${chatId}"]:not([data-virtual-chat])`);
+    }
+    
+    if (!originalChat) {
+      // Try finding by chatId in the href
+      const allChats = document.querySelectorAll('a[href*="/c/"]:not([data-virtual-chat])');
+      for (const chat of allChats) {
+        if (chat.href.includes(chatId)) {
+          originalChat = chat;
+          break;
+        }
+      }
+    }
+    
+    if (!originalChat) {
+      console.log(`❌ Original chat element not found for ${chatId}`);
+      console.log('Available chats:', document.querySelectorAll('a[href*="/c/"]:not([data-virtual-chat])'));
+      // Fallback: show a simple context menu
+      this.showFallbackContextMenu(clickEvent, chatId);
+      return;
+    }
+
+    console.log(`✅ Found original chat for ${chatId}:`, originalChat);
+
+    // Temporarily make the original chat visible off-screen
+    const originalDisplay = originalChat.style.display;
+    const originalPosition = originalChat.style.position;
+    const originalLeft = originalChat.style.left;
+    const originalTop = originalChat.style.top;
+    
+    originalChat.style.display = 'block';
+    originalChat.style.position = 'absolute';
+    originalChat.style.left = '-9999px';
+    originalChat.style.top = '-9999px';
+
+    // Find and click the 3-dots button
+    const buttonSelectors = [
+      'button[data-testid*="options"]',
+      '.trailing button',
+      '.__menu-item-trailing-btn',
+      'button[aria-label*="options"]',
+      'button[aria-label*="menu"]',
+      'button:has(svg)'
+    ];
+    
+    let dotsButton = null;
+    for (const selector of buttonSelectors) {
+      dotsButton = originalChat.querySelector(selector);
+      if (dotsButton) {
+        console.log(`✅ Found 3-dots button using selector: ${selector}`);
+        break;
+      }
+    }
+
+    if (!dotsButton) {
+      console.log(`❌ 3-dots button not found for ${chatId}`);
+      console.log('Available buttons in chat:', originalChat.querySelectorAll('button'));
+      
+      // Restore original styling
+      originalChat.style.display = originalDisplay;
+      originalChat.style.position = originalPosition;
+      originalChat.style.left = originalLeft;
+      originalChat.style.top = originalTop;
+      
+      // Fallback: show a simple context menu
+      this.showFallbackContextMenu(clickEvent, chatId);
+      return;
+    }
+
+    console.log(`🔄 Clicking 3-dots button for ${chatId}`);
+    
+    // Click to open the native menu
+    dotsButton.click();
+
+    // Wait for native menu to appear, then enhance it
+    let attempts = 0;
+    const maxAttempts = 10;
+    
+    const checkForMenu = () => {
+      attempts++;
+      console.log(`🔍 Attempt ${attempts}/${maxAttempts} to find native menu for ${chatId}`);
+      
+      const menuFound = this.enhanceNativeMenuWithFolders(chatId, clickEvent);
+      
+      if (!menuFound && attempts < maxAttempts) {
+        setTimeout(checkForMenu, 100);
+      } else {
+        // Hide the original chat again
+        originalChat.style.display = originalDisplay;
+        originalChat.style.position = originalPosition;
+        originalChat.style.left = originalLeft;
+        originalChat.style.top = originalTop;
+        
+        if (!menuFound) {
+          console.log(`❌ Failed to find native menu after ${maxAttempts} attempts, showing fallback`);
+          this.showFallbackContextMenu(clickEvent, chatId);
+        }
+      }
+    };
+    
+    setTimeout(checkForMenu, 100);
+  }
+
+  enhanceNativeMenuWithFolders(chatId, clickEvent) {
+    console.log(`🔍 Looking for native menu to enhance for chatId: ${chatId}`);
+    
+    // Clear any previous folder options first
+    document.querySelectorAll('.folder-menu-option').forEach(option => option.remove());
+    
+    // Look for actual context menus that just appeared
+    let nativeMenu = null;
+    
+    // First, try to find actual popup menus with better criteria
+    const potentialMenus = document.querySelectorAll('div');
+    
+    for (const element of potentialMenus) {
+      const rect = element.getBoundingClientRect();
+      const style = window.getComputedStyle(element);
+      
+      // Must be positioned (popup) and visible
+      if (!(style.position === 'fixed' || style.position === 'absolute')) continue;
+      if (rect.width < 120 || rect.height < 80) continue; // Minimum reasonable menu size
+      if (rect.width > 400 || rect.height > 500) continue; // Maximum reasonable menu size
+      
+      // Look for menu-like content inside
+      const menuButtons = element.querySelectorAll('button, [role="menuitem"]');
+      const menuTexts = element.querySelectorAll('div, span');
+      
+      // Check if it contains typical ChatGPT menu items
+      let hasMenuContent = false;
+      const textContent = element.textContent.toLowerCase();
+      
+      if (textContent.includes('share') || 
+          textContent.includes('rename') || 
+          textContent.includes('archive') || 
+          textContent.includes('delete') ||
+          menuButtons.length >= 2) {
+        hasMenuContent = true;
+      }
+      
+      if (hasMenuContent) {
+        console.log(`✅ Found potential native menu:`, element, 'Content:', textContent);
+        nativeMenu = element;
+        break;
+      }
+    }
+
+    if (!nativeMenu) {
+      console.log('❌ Could not find native menu to enhance');
+      return false;
+    }
+
+    // Check if we already added folder options (shouldn't happen since we cleared them)
+    if (nativeMenu.querySelector('.folder-menu-option')) {
+      console.log('⚠️ Folder options already exist, skipping');
+      return true;
+    }
+
+    console.log('✅ Found native menu, adding folder options:', nativeMenu);
+
+    // Find existing menu items to match their styling
+    const existingItems = nativeMenu.querySelectorAll('[role="menuitem"], button, div[class*="item"]');
+    let itemStyle = '';
+    
+    if (existingItems.length > 0) {
+      const firstItem = existingItems[0];
+      const computedStyle = window.getComputedStyle(firstItem);
+      itemStyle = `
+        padding: ${computedStyle.padding};
+        font-size: ${computedStyle.fontSize};
+        color: ${computedStyle.color};
+        background: transparent;
+        border: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+      `;
+    }
+
+    // Add separator
+    const separator = document.createElement('div');
+    separator.className = 'folder-menu-option';
+    separator.style.cssText = `
+      height: 1px;
+      background-color: rgba(255, 255, 255, 0.1);
+      margin: 4px 8px;
+    `;
+    nativeMenu.appendChild(separator);
+
+    // Add "Move to Uncategorized" option
+    const uncategorizedOption = this.createStyledMenuOption('Move to Uncategorized', itemStyle, () => {
+      this.moveChatToFolder(chatId, null);
+      this.closeAllMenus();
+    });
+    nativeMenu.appendChild(uncategorizedOption);
+
+    // Add folder options
+    Object.entries(this.folders).forEach(([folderId, folder]) => {
+      const currentFolder = this.chatToFolder[chatId];
+      if (folderId !== currentFolder) {
+        const folderOption = this.createStyledMenuOption(`Move to "${folder.name}"`, itemStyle, () => {
+          this.moveChatToFolder(chatId, folderId);
+          this.closeAllMenus();
+        });
+        nativeMenu.appendChild(folderOption);
+      }
+    });
+    
+    console.log('✅ Successfully added folder options to native menu');
+    return true;
+  }
+
+  createStyledMenuOption(text, baseStyle, clickHandler) {
+    const option = document.createElement('div');
+    option.className = 'folder-menu-option';
+    option.textContent = text;
+    option.setAttribute('role', 'menuitem');
+    
+    option.style.cssText = baseStyle || `
+      padding: 8px 12px;
+      cursor: pointer;
+      color: white;
+      font-size: 14px;
+      transition: background-color 0.2s;
+      background: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
+    `;
+    
+    option.addEventListener('mouseenter', () => {
+      option.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+    });
+    
+    option.addEventListener('mouseleave', () => {
+      option.style.backgroundColor = 'transparent';
+    });
+    
+    option.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      clickHandler();
+    });
+
+    return option;
+  }
+
+  showFallbackContextMenu(clickEvent, chatId) {
+    console.log(`📋 Showing fallback context menu for ${chatId}`);
+    
+    // Remove any existing menus
     document.querySelectorAll('.chat-context-menu').forEach(menu => menu.remove());
 
     const contextMenu = document.createElement('div');
     contextMenu.className = 'chat-context-menu';
-    contextMenu.style.position = 'fixed';
-    contextMenu.style.left = event.clientX + 'px';
-    contextMenu.style.top = event.clientY + 'px';
+    contextMenu.style.cssText = `
+      position: fixed;
+      left: ${clickEvent.clientX}px;
+      top: ${clickEvent.clientY}px;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 4px 0;
+      min-width: 180px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 10000;
+      color: white;
+      font-family: system-ui, -apple-system, sans-serif;
+    `;
 
     const currentFolder = this.chatToFolder[chatId];
     const chatData = this.getChatData(chatId);
 
     let menuHTML = `
-      <div class="context-menu-item" data-action="open">📂 Open Chat</div>
-      <div class="context-menu-separator"></div>
-      <div class="context-menu-item" data-action="move-to-uncategorized">📤 Move to Uncategorized</div>
+      <div class="context-menu-item" data-action="open" style="padding: 8px 12px; cursor: pointer; font-size: 14px;">
+        📂 Open Chat
+      </div>
+      <div style="height: 1px; background: #444; margin: 4px 8px;"></div>
+      <div class="context-menu-item" data-action="move-to-uncategorized" style="padding: 8px 12px; cursor: pointer; font-size: 14px;">
+        📤 Move to Uncategorized
+      </div>
     `;
     
     Object.entries(this.folders).forEach(([folderId, folder]) => {
       const isCurrentFolder = folderId === currentFolder;
       if (!isCurrentFolder) {
-        menuHTML += `<div class="context-menu-item" data-folder-id="${folderId}">
+        menuHTML += `<div class="context-menu-item" data-folder-id="${folderId}" style="padding: 8px 12px; cursor: pointer; font-size: 14px;">
           📁 Move to "${folder.name}"
         </div>`;
       }
@@ -773,23 +1040,30 @@ class ChatGPTFolders {
 
     contextMenu.innerHTML = menuHTML;
 
-    // Add event listeners
-    contextMenu.addEventListener('click', (e) => {
-      const item = e.target.closest('.context-menu-item');
-      if (!item) return;
+    // Add hover effects and click handlers
+    contextMenu.querySelectorAll('.context-menu-item').forEach(item => {
+      item.addEventListener('mouseenter', () => {
+        item.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+      });
+      
+      item.addEventListener('mouseleave', () => {
+        item.style.backgroundColor = 'transparent';
+      });
+      
+      item.addEventListener('click', (e) => {
+        const action = item.dataset.action;
+        const folderId = item.dataset.folderId;
 
-      const action = item.dataset.action;
-      const folderId = item.dataset.folderId;
+        if (action === 'open') {
+          window.location.href = `/c/${chatId}`;
+        } else if (action === 'move-to-uncategorized') {
+          this.moveChatToFolder(chatId, null);
+        } else if (folderId) {
+          this.moveChatToFolder(chatId, folderId);
+        }
 
-      if (action === 'open') {
-        window.location.href = `/c/${chatId}`;
-      } else if (action === 'move-to-uncategorized') {
-        this.moveChatToFolder(chatId, null);
-      } else if (folderId) {
-        this.moveChatToFolder(chatId, folderId);
-      }
-
-      contextMenu.remove();
+        contextMenu.remove();
+      });
     });
 
     document.body.appendChild(contextMenu);
@@ -801,6 +1075,85 @@ class ChatGPTFolders {
         document.removeEventListener('click', closeContextMenu);
       });
     }, 0);
+  }
+
+  closeAllMenus() {
+    // Close any open menus
+    document.body.click();
+    
+    // Also remove any folder menus we might have created
+    document.querySelectorAll('.folder-menu-option, .chat-context-menu').forEach(option => {
+      const menu = option.closest('[role="menu"], .menu, div[style*="position"], .chat-context-menu');
+      if (menu) menu.remove();
+    });
+  }
+
+  triggerNativeAction(chatId, action) {
+    // Find the original chat element (hidden)
+    const originalChat = document.querySelector(`a[href="/c/${chatId}"]:not([data-virtual-chat])`);
+    if (!originalChat) {
+      console.log(`Original chat element not found for ${chatId}`);
+      return;
+    }
+
+    // Temporarily show the original chat
+    const originalDisplay = originalChat.style.display;
+    originalChat.style.display = 'block';
+    originalChat.style.position = 'absolute';
+    originalChat.style.left = '-9999px';
+    originalChat.style.top = '-9999px';
+
+    // Find the 3-dots button
+    const dotsButton = originalChat.querySelector('button[data-testid*="options"], .trailing button, .__menu-item-trailing-btn');
+    if (!dotsButton) {
+      console.log(`3-dots button not found for ${chatId}`);
+      originalChat.style.display = originalDisplay;
+      return;
+    }
+
+    // Click the 3-dots button to open the menu
+    dotsButton.click();
+
+    // Wait for menu to appear and find the action
+    setTimeout(() => {
+      const actionSelectors = {
+        'share': '[data-testid*="share"], [aria-label*="share" i], :has(svg[data-icon="share"]):not(button), div:contains("Share")',
+        'rename': '[data-testid*="rename"], [aria-label*="rename" i], :has(svg[data-icon="edit"]):not(button), div:contains("Rename")',
+        'archive': '[data-testid*="archive"], [aria-label*="archive" i], :has(svg[data-icon="archive"]):not(button), div:contains("Archive")',
+        'delete': '[data-testid*="delete"], [aria-label*="delete" i], :has(svg[data-icon="trash"]):not(button), div:contains("Delete")'
+      };
+
+      // Try to find menu items by text content
+      const menuItems = document.querySelectorAll('[role="menuitem"], .context-menu-item, [class*="menu-item"]');
+      let actionItem = null;
+
+      for (const item of menuItems) {
+        const text = item.textContent.toLowerCase();
+        if ((action === 'share' && text.includes('share')) ||
+            (action === 'rename' && text.includes('rename')) ||
+            (action === 'archive' && text.includes('archive')) ||
+            (action === 'delete' && text.includes('delete'))) {
+          actionItem = item;
+          break;
+        }
+      }
+
+      if (actionItem) {
+        actionItem.click();
+      } else {
+        console.log(`Action "${action}" not found in menu for ${chatId}`);
+        // Close any open menu by clicking elsewhere
+        document.body.click();
+      }
+
+      // Restore original chat visibility
+      setTimeout(() => {
+        originalChat.style.display = originalDisplay;
+        originalChat.style.position = '';
+        originalChat.style.left = '';
+        originalChat.style.top = '';
+      }, 100);
+    }, 100);
   }
 
   createUncategorizedSection(container) {
