@@ -92,6 +92,26 @@ There are two ways to move chats:
 
 Feel free to submit issues, feature requests, or pull requests to improve this extension.
 
+---
+
+## 📞 Contact Information
+
+**Developer:** Ashok Chandrapal  
+**Phone:** +91 9033359874  
+**Email:** developer7039@gmail.com  
+**GitHub:** [github.com/developer-ashok](https://github.com/developer-ashok)  
+**LinkedIn:** [linkedin.com/in/ashok-chandrapal](https://linkedin.com/in/ashok-chandrapal)
+
+---
+
+## Support the Project
+
+If you find this extension helpful and want to support its development, consider buying me a coffee! ☕
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support%20the%20project-yellow.svg?style=flat-square&logo=buy-me-a-coffee)](https://buymeacoffee.com/coderubix)
+
+Your support helps keep this project free and actively maintained. Every contribution, no matter how small, is greatly appreciated! 🙏
+
 ## License
 
 This project is open source and available under the MIT License.
