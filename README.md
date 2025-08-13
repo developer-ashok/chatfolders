@@ -7,6 +7,8 @@ A Chrome extension that adds folder functionality to ChatGPT's sidebar, allowing
 - **Create Folders**: Organize your ChatGPT conversations into custom folders 📁
 - **Drag & Drop**: Easily move chats between folders by dragging and dropping 🔄
 - **Right-click Context Menu**: Quick access to move chats to different folders 🖱️
+- **Enhanced 3-Dots Menu**: Seamlessly integrated folder options in ChatGPT's native menu 🎯
+- **Smart Text Visibility**: Automatic text color adjustment (black for uncategorized, white for folder chats) 🌓
 - **Persistent Storage**: Your folder organization is saved locally and persists between sessions 💾
 - **Seamless Integration**: Matches ChatGPT's design perfectly - no external UI ⚡
 - **Collapsible Folders**: Expand/collapse folders to save space 📊
@@ -34,14 +36,19 @@ This extension is not yet published to the Chrome Web Store. Use the manual inst
 3. Your new folder will appear in the sidebar ✅
 
 ### Moving Chats to Folders 🔄
-There are two ways to move chats:
+There are three ways to move chats:
 
 **Method 1: Drag & Drop** 🖱️
 1. Click and drag any chat from the list
 2. Drop it onto a folder to move it there
 3. Drop it in the "Uncategorized" section to remove it from folders
 
-**Method 2: Right-click Context Menu** 📋
+**Method 2: 3-Dots Menu** 🔧
+1. Click the 3-dots (⋯) button next to any chat
+2. Select "Move to [Folder Name]" from the dropdown menu
+3. The chat will be moved instantly
+
+**Method 3: Right-click Context Menu** 📋
 1. Right-click on any chat
 2. Select "Move to [Folder Name]" from the context menu
 3. The chat will be moved instantly
@@ -81,12 +88,27 @@ There are two ways to move chats:
 - Folder data is stored locally. If you clear browser data or use incognito mode, folders won't persist
 - Folder organization is tied to your browser profile, not your ChatGPT account
 
+### 3-Dots Menu Text Visibility ✅
+**Issue Resolved**: Previously, text in the 3-dots menu could be hard to read on dark backgrounds.
+- **Fixed**: Automatic color adjustment based on chat organization status
+- **Uncategorized chats**: Black text on light background
+- **Folder chats**: White text on dark background
+
+## Recent Updates 🔄
+
+### v1.1 - Menu Visibility Improvements (Latest)
+- ✅ **Fixed 3-dots menu text visibility** - No more invisible text on dark backgrounds
+- ✅ **Smart color adaptation** - Automatic text color based on chat organization status
+- ✅ **Enhanced hover effects** - Consistent visual feedback without color flickering
+- ✅ **Improved accessibility** - Better contrast and readability across all menu interactions
+
 ## Technical Details 🛠️
 
 - **Manifest Version**: 3 📜
 - **Content Script**: Injects folder functionality into ChatGPT's existing interface 🔧
 - **Storage**: Uses Chrome's local storage API 💽
 - **Framework**: Vanilla JavaScript (no external dependencies) ⚡
+- **Smart Styling**: Dynamic color adjustment based on context 🎨
 
 ## Contributing 🤝
 
