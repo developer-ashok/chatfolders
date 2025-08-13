@@ -208,7 +208,7 @@
   cursor: pointer;
   color: var(--text-primary, #ffffff);
   font-size: 14px;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
   border-bottom: 1px solid var(--border-light, rgba(142, 142, 160, 0.1));
 }
 
@@ -217,13 +217,62 @@
 }
 
 .context-menu-item:hover:not(.disabled) {
-  background-color: var(--surface-secondary, rgba(142, 142, 160, 0.1));
+  background-color: var(--surface-secondary, rgba(142, 142, 160, 0.15));
 }
 
 .context-menu-item.disabled {
   opacity: 0.5;
   cursor: not-allowed;
   color: var(--text-secondary, #8e8ea0);
+}
+
+/* Folder menu items in dropdown menus */
+.folder-menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--text-primary, #ffffff) !important;
+  font-size: 14px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.folder-menu-item:hover {
+  background-color: var(--surface-secondary, rgba(142, 142, 160, 0.15)) !important;
+}
+
+/* Folder menu options in ChatGPT's native menus */
+.folder-menu-option {
+  color: #ffffff !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.folder-menu-option:hover {
+  background-color: var(--surface-secondary, rgba(142, 142, 160, 0.15)) !important;
+}
+
+/* Additional styling for all folder menu items - color is set dynamically by JavaScript based on context */
+.folder-menu-item,
+.folder-menu-item span,
+.folder-menu-option,
+.folder-menu-option span,
+[role="menu"] .folder-menu-item,
+[role="menu"] .folder-menu-option {
+  /* Color is set dynamically: #ffffff for folder chats, #000000 for uncategorized chats */
+}
+
+.folder-menu-item:hover,
+.folder-menu-option:hover {
+  background-color: rgba(142, 142, 160, 0.15) !important;
+}
+
+/* Ensure separator styling matches */
+.folder-menu-separator {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  margin: 4px 8px;
+  border: none;
 }
 
 .context-menu-separator {

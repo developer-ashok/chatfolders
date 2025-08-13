@@ -284,6 +284,8 @@ class ChatGPTFolders {
 
     console.log('Injecting folder options into menu for chat:', chatId);
     const currentFolder = this.chatToFolder[chatId];
+    const isInFolder = !!currentFolder;
+    const textColor = isInFolder ? '#ffffff' : '#000000';
 
     // Find existing menu items to match their styling
     const existingItems = menu.querySelectorAll('[role="menuitem"], [class*="menu"], div');
@@ -295,9 +297,28 @@ class ChatGPTFolders {
       menuItemStyle = `
         padding: ${computedStyle.padding};
         font-size: ${computedStyle.fontSize};
-        color: ${computedStyle.color};
+        color: ${textColor} !important;
         font-family: ${computedStyle.fontFamily};
         line-height: ${computedStyle.lineHeight};
+        background: transparent;
+        border: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+      `;
+    } else {
+      // Fallback styling if no existing items found
+      menuItemStyle = `
+        padding: 8px 12px;
+        font-size: 14px;
+        color: ${textColor} !important;
+        font-family: system-ui, -apple-system, sans-serif;
+        line-height: 1.4;
+        background: transparent;
+        border: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
       `;
     }
 
@@ -306,8 +327,9 @@ class ChatGPTFolders {
     separator.className = 'folder-menu-separator';
     separator.style.cssText = `
       height: 1px;
-      background-color: rgba(142, 142, 160, 0.2);
+      background-color: rgba(255, 255, 255, 0.2) !important;
       margin: 8px 0;
+      border: none;
     `;
 
     // Add separator
@@ -326,7 +348,8 @@ class ChatGPTFolders {
         },
         isCurrentFolder,
         menuItemStyle,
-        isCurrentFolder ? '✓' : '📁'
+        isCurrentFolder ? '✓' : '📁',
+        textColor
       );
 
       menu.appendChild(folderOption);
@@ -342,14 +365,15 @@ class ChatGPTFolders {
         },
         false,
         menuItemStyle,
-        '📤'
+        '📤',
+        textColor
       );
 
       menu.appendChild(uncategorizedOption);
     }
   }
 
-  createMenuItemLikeOption(text, onClick, isActive = false, baseStyle = '', icon = '') {
+  createMenuItemLikeOption(text, onClick, isActive = false, baseStyle = '', icon = '', textColor = '#ffffff') {
     const option = document.createElement('div');
     option.className = 'folder-menu-item';
     option.setAttribute('role', 'menuitem');
@@ -357,8 +381,8 @@ class ChatGPTFolders {
     option.style.cssText = `
       ${baseStyle}
       cursor: ${isActive ? 'default' : 'pointer'};
-      color: ${isActive ? 'rgba(142, 142, 160, 0.6)' : 'inherit'};
-      transition: background-color 0.2s ease;
+      color: ${isActive ? 'rgba(142, 142, 160, 0.6)' : textColor} !important;
+      transition: background-color 0.2s ease, color 0.2s ease;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -366,7 +390,7 @@ class ChatGPTFolders {
 
     if (!isActive) {
       option.addEventListener('mouseenter', () => {
-        option.style.backgroundColor = 'rgba(142, 142, 160, 0.1)';
+        option.style.backgroundColor = 'rgba(142, 142, 160, 0.15)';
       });
       
       option.addEventListener('mouseleave', () => {
@@ -384,9 +408,11 @@ class ChatGPTFolders {
     const iconSpan = document.createElement('span');
     iconSpan.textContent = icon;
     iconSpan.style.fontSize = '14px';
+    iconSpan.style.color = textColor;
     
     const textSpan = document.createElement('span');
     textSpan.textContent = text;
+    textSpan.style.color = textColor;
     
     option.appendChild(iconSpan);
     option.appendChild(textSpan);
@@ -400,15 +426,15 @@ class ChatGPTFolders {
       padding: 8px 16px;
       cursor: ${isActive ? 'default' : 'pointer'};
       font-size: 14px;
-      color: ${isActive ? 'rgba(142, 142, 160, 0.6)' : 'inherit'};
-      transition: background-color 0.2s ease;
+      color: ${isActive ? 'rgba(142, 142, 160, 0.6)' : 'var(--text-primary, #ffffff)'};
+      transition: background-color 0.2s ease, color 0.2s ease;
       border-radius: 4px;
       margin: 0 8px;
     `;
 
     if (!isActive) {
       option.addEventListener('mouseenter', () => {
-        option.style.backgroundColor = 'rgba(142, 142, 160, 0.1)';
+        option.style.backgroundColor = 'rgba(142, 142, 160, 0.15)';
       });
       
       option.addEventListener('mouseleave', () => {
@@ -853,6 +879,10 @@ class ChatGPTFolders {
     // Clear any previous folder options first
     document.querySelectorAll('.folder-menu-option').forEach(option => option.remove());
     
+    const currentFolder = this.chatToFolder[chatId];
+    const isInFolder = !!currentFolder;
+    const textColor = isInFolder ? '#ffffff' : '#000000';
+    
     // Look for actual context menus that just appeared
     let nativeMenu = null;
     
@@ -914,7 +944,7 @@ class ChatGPTFolders {
       itemStyle = `
         padding: ${computedStyle.padding};
         font-size: ${computedStyle.fontSize};
-        color: ${computedStyle.color};
+        color: ${textColor};
         background: transparent;
         border: none;
         width: 100%;
@@ -944,7 +974,6 @@ class ChatGPTFolders {
 
     // Add folder options
     Object.entries(this.folders).forEach(([folderId, folder]) => {
-      const currentFolder = this.chatToFolder[chatId];
       if (folderId !== currentFolder) {
         const folderOption = this.createStyledMenuOption(`Move to "${folder.name}"`, itemStyle, () => {
           this.moveChatToFolder(chatId, folderId);
@@ -967,9 +996,9 @@ class ChatGPTFolders {
     option.style.cssText = baseStyle || `
       padding: 8px 12px;
       cursor: pointer;
-      color: white;
+      color: #000000;
       font-size: 14px;
-      transition: background-color 0.2s;
+      transition: background-color 0.2s ease, color 0.2s ease;
       background: transparent;
       border: none;
       width: 100%;
@@ -977,7 +1006,7 @@ class ChatGPTFolders {
     `;
     
     option.addEventListener('mouseenter', () => {
-      option.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+      option.style.backgroundColor = 'rgba(142, 142, 160, 0.15)';
     });
     
     option.addEventListener('mouseleave', () => {
@@ -999,32 +1028,37 @@ class ChatGPTFolders {
     // Remove any existing menus
     document.querySelectorAll('.chat-context-menu').forEach(menu => menu.remove());
 
+    const currentFolder = this.chatToFolder[chatId];
+    const isInFolder = !!currentFolder;
+    const textColor = isInFolder ? '#ffffff' : '#000000';
+    const bgColor = isInFolder ? '#2a2a2a' : '#ffffff';
+    const borderColor = isInFolder ? '#444' : '#ddd';
+
     const contextMenu = document.createElement('div');
     contextMenu.className = 'chat-context-menu';
     contextMenu.style.cssText = `
       position: fixed;
       left: ${clickEvent.clientX}px;
       top: ${clickEvent.clientY}px;
-      background: #2a2a2a;
-      border: 1px solid #444;
+      background: ${bgColor};
+      border: 1px solid ${borderColor};
       border-radius: 8px;
       padding: 4px 0;
       min-width: 180px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       z-index: 10000;
-      color: white;
+      color: ${textColor} !important;
       font-family: system-ui, -apple-system, sans-serif;
     `;
 
-    const currentFolder = this.chatToFolder[chatId];
     const chatData = this.getChatData(chatId);
 
     let menuHTML = `
-      <div class="context-menu-item" data-action="open" style="padding: 8px 12px; cursor: pointer; font-size: 14px;">
+      <div class="context-menu-item" data-action="open" style="padding: 8px 12px; cursor: pointer; font-size: 14px; color: ${textColor} !important;">
         📂 Open Chat
       </div>
-      <div style="height: 1px; background: #444; margin: 4px 8px;"></div>
-      <div class="context-menu-item" data-action="move-to-uncategorized" style="padding: 8px 12px; cursor: pointer; font-size: 14px;">
+      <div style="height: 1px; background: ${isInFolder ? '#444' : '#ddd'}; margin: 4px 8px;"></div>
+      <div class="context-menu-item" data-action="move-to-uncategorized" style="padding: 8px 12px; cursor: pointer; font-size: 14px; color: ${textColor} !important;">
         📤 Move to Uncategorized
       </div>
     `;
@@ -1032,7 +1066,7 @@ class ChatGPTFolders {
     Object.entries(this.folders).forEach(([folderId, folder]) => {
       const isCurrentFolder = folderId === currentFolder;
       if (!isCurrentFolder) {
-        menuHTML += `<div class="context-menu-item" data-folder-id="${folderId}" style="padding: 8px 12px; cursor: pointer; font-size: 14px;">
+        menuHTML += `<div class="context-menu-item" data-folder-id="${folderId}" style="padding: 8px 12px; cursor: pointer; font-size: 14px; color: ${textColor} !important;">
           📁 Move to "${folder.name}"
         </div>`;
       }
@@ -1043,7 +1077,7 @@ class ChatGPTFolders {
     // Add hover effects and click handlers
     contextMenu.querySelectorAll('.context-menu-item').forEach(item => {
       item.addEventListener('mouseenter', () => {
-        item.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+        item.style.backgroundColor = isInFolder ? 'rgba(142, 142, 160, 0.15)' : 'rgba(0, 0, 0, 0.1)';
       });
       
       item.addEventListener('mouseleave', () => {
